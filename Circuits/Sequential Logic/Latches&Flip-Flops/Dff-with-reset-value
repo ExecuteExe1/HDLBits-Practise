@@ -1,0 +1,19 @@
+module top_module (
+    input clk,
+    input reset,
+    input [7:0] d,
+    output [7:0] q
+);
+  integer i;
+    always@(negedge clk)begin
+        for(i=0;i<8;i=i+1)begin
+            if(reset)
+             q<=8'h34;
+            else
+              q<=d;
+
+        end
+    end
+
+
+endmodule
