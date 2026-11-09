@@ -9,24 +9,27 @@ module top_module(
     output aaah ); 
 
 
-parameter A=0,B=1,C=2,D=3; //A left moving,B right moving ,C fall left,D fall right
-    reg next_state , state;
+localparam [1:0] A=2'b00,B=2'b01,C=2'b10,D=2'b11; //A left moving,B right moving ,C fall left,D fall right
+    reg [1:0] next_state , state;
  
-    always@(*)begin
+     always @(*) begin
         case(state)
-            A:next_state = (ground==0) ? C : ((bump_left==1) ? B : A);
-            B:next_state = (ground==0) ? D : ((bump_right==1) ? A : B);
-            A:next_state = (ground==1) ? A : C;
-            B:next_state = (ground==1) ? B : D;
+            A: next_state = (!ground) ? C : (bump_left ? B : A);
+            B: next_state = (!ground) ? D : (bump_right ? A : B);
+            C: next_state = (ground) ? A : C;
+            D: next_state = (ground) ? B : D;
+            default: next_state = A;
         endcase
     end
 
-    always@(posedge clk,posedge areset)begin
+    always@(posedge clk or posedge areset)begin
         if(areset) state <= A;
-        else state <= next_state;
+        else begin state <= next_state;
             end
+    end
 
             assign walk_left = (state==A);
         assign walk_right = (state==B);
-    assign aaah= (ground==0);
+    assign aaah = ((state == C) || (state == D));
+
 endmodule
