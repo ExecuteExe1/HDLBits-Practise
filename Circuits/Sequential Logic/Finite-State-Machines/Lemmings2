@@ -1,0 +1,32 @@
+module top_module(
+    input clk,
+    input areset,    // Freshly brainwashed Lemmings walk left.
+    input bump_left,
+    input bump_right,
+    input ground,
+    output walk_left,
+    output walk_right,
+    output aaah ); 
+
+
+parameter A=0,B=1,C=2,D=3; //A left moving,B right moving ,C fall left,D fall right
+    reg next_state , state;
+ 
+    always@(*)begin
+        case(state)
+            A:next_state = (ground==0) ? C : ((bump_left==1) ? B : A);
+            B:next_state = (ground==0) ? D : ((bump_right==1) ? A : B);
+            A:next_state = (ground==1) ? A : C;
+            B:next_state = (ground==1) ? B : D;
+        endcase
+    end
+
+    always@(posedge clk,posedge areset)begin
+        if(areset) state <= A;
+        else state <= next_state;
+            end
+
+            assign walk_left = (state==A);
+        assign walk_right = (state==B);
+    assign aaah= (ground==0);
+endmodule
