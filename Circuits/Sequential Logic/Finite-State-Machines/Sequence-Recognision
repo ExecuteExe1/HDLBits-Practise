@@ -12,11 +12,12 @@ module top_module(
     always@(*)begin
         case(state)
             ZERO:next_state=(in)?ONE:ZERO;
-            ONE:next_state=(in)?TWO:ONE;
-            TWO:next_state=(in)?THREE:TWO;
-            THREE:next_state=(in)?FOUR:THREE;
-            FIVE:next_state=(in)?SIX:FIVE;
-            SIX:next_state=(in)?DISC:SIX;
+            ONE:next_state=(in)?TWO:ZERO;
+            TWO:next_state=(in)?THREE:ZERO;
+            THREE:next_state=(in)?FOUR:ZERO;
+            FOUR:next_state=(in)?FIVE:ZERO;
+                FIVE:next_state=(in)?SIX:DISC;
+            SIX:next_state=(in)?ERR:FLAG;
             DISC:next_state=(in)? ONE : ZERO;
             FLAG:next_state=(in)?ONE : ZERO;
             ERR:next_state=(in)?ERR : ZERO;
@@ -31,6 +32,10 @@ module top_module(
     assign disc = (state==DISC);
     assign flag = (state==FLAG);
     assign err = (state==ERR);
+
+
+endmodule
+
 
 
 endmodule
