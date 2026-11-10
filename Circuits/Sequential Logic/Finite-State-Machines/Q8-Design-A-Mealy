@@ -1,0 +1,42 @@
+module top_module (
+    input clk,
+    input aresetn,    // Asynchronous active-low reset
+    input x,
+    output z ); 
+
+
+    localparam [1:0] START =2'b00,
+                     ONE = 2'b01,
+                     ONE_ZERO=2'b10;
+    reg [1:0] state,next_state;
+
+    always@(*)begin
+        case(state) 
+            START:begin
+                 next_state=(x)?ONE:START;
+                  z=0;
+            end
+            ONE:begin
+              next_state=(x)?ONE:ONE_ZERO;
+                z=0;
+            end
+            ONE_ZERO:begin
+                if(x) begin
+                 next_state=ONE;
+                    z=1;end
+                  else begin
+                    next_state=START;
+                      z=0;
+                  end
+            end
+        endcase
+    end
+
+    always@(posedge clk or negedge aresetn)begin
+            if(~aresetn) state<=START;
+             else state<=next_state;
+        end
+
+
+
+endmodule
