@@ -1,0 +1,46 @@
+module top_module (
+    input clk,
+    input reset,      // Synchronous reset
+    input data,
+    output shift_ena,
+    output counting,
+    input done_counting,
+    output done,
+    input ack );
+
+    localparam [3:0] IDLE = 4'b0000,
+                     S1 = 4'b0001, //1
+                     S2 = 4'b0010, //11
+                     S3 = 4'b0011, //110
+                     S4 =  4'b0100, //1101
+                     Shift1 = 4'b0101,
+                     Shift2 = 4'b0110,
+                     Shift3 = 4'b0111,
+                     Count =  4'b1000,
+                     Done = 4'b1001;
+    reg [3:0] state,next_state;
+    always@(*)begin
+        case(state)
+            IDLE:next_state=(data)?S1:IDLE;
+            S1:next_state=(data)?S2:IDLE;
+            S2:next_state=(data)?S2:S3;
+            S3:next_state=(data)?S4:IDLE; 
+            S4:next_state=Shift1;
+            Shift1:next_state=Shift2;
+            Shift2:next_state=Shift3;
+            Shift3:next_state=Count;
+            Count:next_state=(done_counting)?Done:Count;
+            Done:next_state=(ack)? IDLE : Done;
+        endcase
+    end
+
+    always@(posedge clk)begin
+        if (reset) state <= IDLE;
+		else state <= next_state;
+	end
+
+    assign shift_ena = ((state == S4) | (state == Shift1) | (state == Shift2) | (state == Shift3));
+    assign counting = (state == Count);
+    assign done = (state == Done);
+ 
+endmodule
